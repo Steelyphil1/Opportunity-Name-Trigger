@@ -1,0 +1,18 @@
+trigger OppApproval on Opportunity (after insert, after update) {
+	
+    Approval.ProcessSubmitRequest[] requestList = new Approval.ProcessSubmitRequest[]{};
+    
+    for (Opportunity o : Trigger.New) {
+        if(o.Amount >= 5000) {
+            Approval.ProcessSubmitRequest request = new Approval.ProcessSubmitRequest();
+            request.setObjectId(o.id);
+            request.setComments('Submitting for Approval');
+            request.setProcessDefinitionNameOrId('X5000Approval');
+            
+            requestList.add(request);
+        }
+    }
+     if(requestList.size() > 0) {
+            Approval.ProcessResult[] result = Approval.process(requestList);
+        }
+}
